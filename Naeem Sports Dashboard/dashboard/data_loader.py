@@ -8,6 +8,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from dashboard import forecasting
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATABASE_PATH = PROJECT_ROOT / "data" / "sports_shop.db"
 
@@ -154,5 +156,13 @@ def load_shop_data():
     )
 
 
+@st.cache_data(show_spinner=False)
+def load_expected_demand():
+    shop = load_shop_data()
+    forecast = forecasting.forecast_all_products(shop.daily_sales, shop.products)
+    return forecast
+
+
 def refresh():
     load_shop_data.clear()
+    load_expected_demand.clear()
