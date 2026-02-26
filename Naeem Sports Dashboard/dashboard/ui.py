@@ -119,7 +119,7 @@ html, body, [class*="css"] {
     padding: 20px 20px 18px 20px;
     height: 100%;
     box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
-    border-top: 4px solid var(--accent, #2563EB);
+    border-top: 4px solid #2563EB;
 }
 
 .snap-card .snap-icon { font-size: 1.5rem; line-height: 1; }
@@ -179,7 +179,7 @@ html, body, [class*="css"] {
     flex-wrap: wrap;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-left: 5px solid var(--accent, #2563EB);
+    border-left: 5px solid #2563EB;
     border-radius: 16px;
     padding: 18px 24px;
     margin-bottom: 14px;
@@ -196,7 +196,7 @@ html, body, [class*="css"] {
 .momentum-banner .momentum-value {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--accent, #2563EB);
+    color: #2563EB;
     white-space: nowrap;
 }
 
@@ -240,7 +240,7 @@ html, body, [class*="css"] {
     border-radius: 20px;
     padding: 24px 22px;
     text-align: center;
-    border-top: 5px solid var(--accent, #F97316);
+    border-top: 5px solid #F97316;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
     height: 100%;
 }
@@ -278,7 +278,7 @@ html, body, [class*="css"] {
 .alert-card {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-left: 5px solid var(--accent, #EF4444);
+    border-left: 5px solid #EF4444;
     border-radius: 15px;
     padding: 15px 18px;
     margin-bottom: 10px;
@@ -327,7 +327,7 @@ html, body, [class*="css"] {
     border-radius: 16px;
     padding: 18px 20px;
     text-align: left;
-    border-bottom: 4px solid var(--accent, #16A34A);
+    border-bottom: 4px solid #16A34A;
 }
 
 .status-tile .status-count {
@@ -387,7 +387,7 @@ html, body, [class*="css"] {
     border-radius: 16px;
     padding: 18px 22px;
     margin-bottom: 12px;
-    border-left: 6px solid var(--accent, #EF4444);
+    border-left: 6px solid #EF4444;
 }
 
 .buy-card .buy-head {
@@ -409,7 +409,7 @@ html, body, [class*="css"] {
     font-weight: 700;
 }
 .buy-card .buy-value { font-size: 1.15rem; font-weight: 800; color: var(--ink); }
-.buy-card .buy-action { margin-top: 12px; font-weight: 700; color: var(--accent, #EF4444); }
+.buy-card .buy-action { margin-top: 12px; font-weight: 700; color: #EF4444; }
 
 .detail-metric {
     background: var(--surface);
@@ -478,10 +478,16 @@ html, body, [class*="css"] {
 
 [data-testid="stSidebar"] [role="radiogroup"] label:hover { background: rgba(255, 255, 255, 0.07); }
 
-[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+[data-testid="stSidebar"] div[data-baseweb="select"] > div,
+[data-testid="stSidebar"] div[data-baseweb="input"],
+[data-testid="stSidebar"] [data-testid="stDateInput"] > div > div {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.16);
 }
+
+[data-testid="stSidebar"] div[data-baseweb="base-input"] { background: transparent; }
+
+[data-testid="stSidebar"] [data-testid="stDateInput"] input { color: #FFFFFF; }
 
 [data-testid="stSidebar"] .stButton button {
     width: 100%;
@@ -537,7 +543,7 @@ def section_head(icon, title, subtitle=""):
 def snapshot_card(icon, label, value, caption, tone="sales"):
     accent = TONE_COLORS.get(tone, TONE_COLORS["neutral"])
     return f"""
-<div class="snap-card" style="--accent: {accent};">
+<div class="snap-card" style="border-top-color: {accent};">
     <span class="snap-icon">{icon}</span>
     <span class="snap-label">{escape(label)}</span>
     <div class="snap-value">{escape(str(value))}</div>
@@ -558,12 +564,12 @@ def story_panel(lines):
 def momentum_banner(headline, detail, change_text, positive):
     accent = "#16A34A" if positive else "#EF4444"
     return f"""
-<div class="momentum-banner" style="--accent: {accent};">
+<div class="momentum-banner" style="border-left-color: {accent};">
     <div>
         <div class="momentum-title">{escape(headline)}</div>
         <div class="momentum-detail">{escape(detail)}</div>
     </div>
-    <div class="momentum-value">{escape(change_text)}</div>
+    <div class="momentum-value" style="color: {accent};">{escape(change_text)}</div>
 </div>
 """
 
@@ -605,7 +611,7 @@ def rank_card(rank, product_name, category, units, caption):
 def podium_card(rank, product_name, category, units, revenue):
     accents = {1: "#F59E0B", 2: "#94A3B8", 3: "#C2724B"}
     return f"""
-<div class="podium-card" style="--accent: {accents.get(rank, '#F97316')};">
+<div class="podium-card" style="border-top-color: {accents.get(rank, '#F97316')};">
     <div class="podium-medal">{MEDALS.get(rank, rank)}</div>
     <div class="podium-name">{escape(product_name)}</div>
     {sport_chip(category)}
@@ -618,7 +624,7 @@ def podium_card(rank, product_name, category, units, revenue):
 def alert_card(product_name, category, status, current_stock, expected_demand, action):
     color = rules.STATUS_COLOR[status]
     return f"""
-<div class="alert-card" style="--accent: {color};">
+<div class="alert-card" style="border-left-color: {color};">
     <div class="alert-top">
         <div>
             <div class="alert-name">{escape(product_name)}</div>
@@ -643,7 +649,7 @@ def alert_card(product_name, category, status, current_stock, expected_demand, a
 
 def momentum_card(product_name, category, previous_units, recent_units, label, change_text):
     return f"""
-<div class="alert-card" style="--accent: #F97316;">
+<div class="alert-card" style="border-left-color: #F97316;">
     <div class="alert-top">
         <div>
             <div class="alert-name">{escape(product_name)}</div>
@@ -674,7 +680,7 @@ def momentum_card(product_name, category, previous_units, recent_units, label, c
 def status_tile(status, count):
     color = rules.STATUS_COLOR[status]
     return f"""
-<div class="status-tile" style="--accent: {color};">
+<div class="status-tile" style="border-bottom-color: {color};">
     <div class="status-count">{count}</div>
     <div class="status-name">{rules.STATUS_BADGE[status]} {escape(status)}</div>
     <div class="status-note">{escape(rules.STATUS_NOTE[status])}</div>
@@ -699,7 +705,7 @@ def explain_note(text):
 def buy_card(product_name, category, status, current_stock, expected_demand, action, cover_text):
     color = rules.STATUS_COLOR[status]
     return f"""
-<div class="buy-card" style="--accent: {color};">
+<div class="buy-card" style="border-left-color: {color};">
     <div class="buy-head">
         <div>
             <div class="buy-name">{escape(product_name)}</div>
@@ -721,7 +727,7 @@ def buy_card(product_name, category, status, current_stock, expected_demand, act
             <span class="buy-value" style="font-size:0.98rem;">{escape(cover_text)}</span>
         </div>
     </div>
-    <div class="buy-action">Action: {escape(action)}</div>
+    <div class="buy-action" style="color: {color};">Action: {escape(action)}</div>
 </div>
 """
 
