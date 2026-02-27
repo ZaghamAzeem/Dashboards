@@ -82,6 +82,7 @@ def sales_momentum_chart(daily_frame, previous_daily_average):
             annotation_font=dict(color=ACCENT, size=12),
         )
 
+    figure.update_yaxes(tickprefix="Rs ")
     return _style(figure, height=360, legend=True)
 
 
@@ -103,6 +104,7 @@ def sales_trend_chart(frame, grain):
             hovertemplate=f"%{{x|{hover_format}}}<br>Sales: Rs %{{y:,.0f}}<extra></extra>",
         )
     )
+    figure.update_yaxes(tickprefix="Rs ")
     return _style(figure, height=380)
 
 
@@ -129,7 +131,7 @@ def category_bar_chart(performance):
             ),
         )
     )
-    figure.update_xaxes(showgrid=True, gridcolor=GRID, title_text="")
+    figure.update_xaxes(showgrid=True, gridcolor=GRID, title_text="", tickprefix="Rs ")
     figure.update_yaxes(showgrid=False, tickfont=dict(color=INK, size=14))
     figure.update_layout(bargap=0.35)
     return _style(figure, height=max(280, 58 * len(ordered)))
@@ -154,6 +156,7 @@ def weekday_chart(pattern):
     )
     figure.update_layout(bargap=0.4)
     figure.update_xaxes(tickfont=dict(color=INK, size=13))
+    figure.update_yaxes(tickprefix="Rs ")
     return _style(figure, height=320)
 
 
@@ -239,13 +242,16 @@ def history_and_forecast_chart(history, forecast):
     )
 
     if not history.empty and not forecast.empty:
-        boundary = history["date"].max() + pd.Timedelta(hours=12)
-        figure.add_vline(
+        boundary = (history["date"].max() + pd.Timedelta(hours=12)).to_pydatetime()
+        figure.add_vline(x=boundary, line=dict(color=MUTED, width=1.5, dash="dot"))
+        figure.add_annotation(
             x=boundary,
-            line=dict(color=MUTED, width=1.5, dash="dot"),
-            annotation_text="Today",
-            annotation_position="top",
-            annotation_font=dict(color=MUTED, size=12),
+            y=1.0,
+            yref="paper",
+            yanchor="bottom",
+            text="Today",
+            showarrow=False,
+            font=dict(color=MUTED, size=12),
         )
 
     figure.update_yaxes(title_text="Units")
