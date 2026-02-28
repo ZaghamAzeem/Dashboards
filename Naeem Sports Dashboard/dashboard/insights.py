@@ -6,12 +6,33 @@ MAX_STORY_LINES = 3
 MAX_INSIGHTS = 6
 
 
-def sales_story(performance, momentum):
-    leader = rules.category_leader(performance)
-    if leader is None:
+def _plural(count, word):
+    return word if count == 1 else f"{word}s"
+
+
+def _is_are(count):
+    return "is" if count == 1 else "are"
+
+
+def _needs(count):
+    return "needs" if count == 1 else "need"
+
+
+def sales_story(performance, momentum, selected_sport=None):
+    if performance.empty:
         return None
 
     direction = rules.sales_momentum_headline(momentum["change_pct"])
+    chosen = performance.loc[performance["category"] == selected_sport]
+
+    if selected_sport and not chosen.empty:
+        row = chosen.iloc[0]
+        return (
+            f"{selected_sport} products took {rules.format_currency(row['revenue'])} in this "
+            f"period, {row['share']:.0f}% of everything the shop sold. {direction}."
+        )
+
+    leader = rules.category_leader(performance)
     return (
         f"{leader['category']} products are leading sales with "
         f"{leader['share']:.0f}% of the money taken. {direction}."
@@ -19,21 +40,30 @@ def sales_story(performance, momentum):
 
 
 def inventory_story(counts):
-    needing_attention = counts[rules.STATUS_OUT] + counts[rules.STATUS_RESTOCK]
-    watching = counts[rules.STATUS_LOW]
+    out = counts[rules.STATUS_OUT]
+    restock = counts[rules.STATUS_RESTOCK]
+    low = counts[rules.STATUS_LOW]
 
-    if needing_attention == 0 and watching == 0:
+    if out == 0 and restock == 0 and low == 0:
         return "Every product on the shelf has enough stock for the week ahead."
-    if needing_attention == 0:
-        return f"{watching} products are running low and are worth watching this week."
-    if counts[rules.STATUS_OUT] == 0:
+    if out == 0 and restock == 0:
         return (
-            f"{needing_attention} products need restocking, "
-            f"and {watching} more are running low."
+            f"{low} {_plural(low, 'product')} {_is_are(low)} running low "
+            "and worth watching this week."
+        )
+    if out == 0:
+        return (
+            f"{restock} {_plural(restock, 'product')} {_is_are(restock)} below the stock "
+            f"needed for this week, and {low} more {_is_are(low)} running low."
+        )
+    if restock == 0:
+        return (
+            f"{out} {_plural(out, 'product')} {_is_are(out)} completely out of stock, "
+            f"with {low} more running low."
         )
     return (
-        f"{counts[rules.STATUS_OUT]} products have run out completely and "
-        f"{counts[rules.STATUS_RESTOCK]} more need restocking soon."
+        f"{out} {_plural(out, 'product')} {_is_are(out)} completely out of stock and "
+        f"{restock} more {_needs(restock)} restocking soon."
     )
 
 
@@ -112,10 +142,10 @@ def slow_mover_story(movers):
     )
 
 
-def build_todays_story(performance, momentum, counts, overview, leaderboard):
+def build_todays_story(performance, momentum, counts, overview, leaderboard, selected_sport=None):
     lines = []
     for candidate in (
-        sales_story(performance, momentum),
+        sales_story(performance, momentum, selected_sport),
         inventory_story(counts),
         forecast_story(overview),
         favourite_product_story(leaderboard),
@@ -126,10 +156,19 @@ def build_todays_story(performance, momentum, counts, overview, leaderboard):
 
 
 def build_smart_insights(
-    performance, momentum, leaderboard, rising, overview, counts, pattern, peaks, movers
+    performance,
+    momentum,
+    leaderboard,
+    rising,
+    overview,
+    counts,
+    pattern,
+    peaks,
+    movers,
+    selected_sport=None,
 ):
     candidates = [
-        ("🏅", "Strongest Sport", sales_story(performance, momentum)),
+        ("🏅", "Sales Picture", sales_story(performance, momentum, selected_sport)),
         ("🥇", "Shop Favourite", favourite_product_story(leaderboard)),
         ("🔥", "Gaining Attention", momentum_story(rising)),
         ("📦", "Stock Health", inventory_story(counts)),

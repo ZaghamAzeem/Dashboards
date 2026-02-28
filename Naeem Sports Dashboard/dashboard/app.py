@@ -99,6 +99,7 @@ def build_context(shop, forecast, settings):
     recent_daily = analytics.recent_daily_average(shop.sales, latest_day)
     overview = rules.build_stock_overview(shop.products, expected_totals, recent_daily)
 
+    shop_period_sales = analytics.slice_by_dates(shop.sales, settings["start"], settings["end"])
     sport_sales = analytics.slice_by_category(shop.sales, settings["sport"])
     period_sales = analytics.slice_by_dates(sport_sales, settings["start"], settings["end"])
 
@@ -122,6 +123,7 @@ def build_context(shop, forecast, settings):
         "overview": sport_overview,
         "sport_sales": sport_sales,
         "period_sales": period_sales,
+        "shop_period_sales": shop_period_sales,
         "momentum": analytics.overall_momentum(sport_sales, latest_day, momentum_window),
         "counts": rules.status_counts(sport_overview),
     }
@@ -259,11 +261,11 @@ def page_home(context):
         return
 
     leaderboard = analytics.product_leaderboard(period_sales)
-    performance = analytics.category_performance(period_sales)
+    performance = analytics.category_performance(context["shop_period_sales"])
 
     st.markdown(ui.section_head("📖", "Today's Story"), unsafe_allow_html=True)
     story = insights.build_todays_story(
-        performance, context["momentum"], counts, overview, leaderboard
+        performance, context["momentum"], counts, overview, leaderboard, settings["sport"]
     )
     st.markdown(ui.story_panel(story), unsafe_allow_html=True)
 
@@ -337,8 +339,9 @@ def page_home(context):
         overview,
         counts,
         analytics.weekday_pattern(period_sales),
-        analytics.seasonal_peak_by_category(context["sport_sales"]),
+        analytics.seasonal_peak_by_category(context["shop"].sales),
         analytics.slow_movers(period_sales, context["latest_day"]),
+        settings["sport"],
     )
     for row_start in range(0, len(smart), 3):
         columns = st.columns(3, gap="medium")
@@ -401,11 +404,15 @@ def page_sales_story(context):
         unsafe_allow_html=True,
     )
 
-    performance = analytics.category_performance(period_sales)
+    performance = analytics.category_performance(context["shop_period_sales"])
     leader = rules.category_leader(performance)
 
     st.markdown(
-        ui.section_head("🏅", "Sales By Sport", "Which sport matters most to the shop?"),
+        ui.section_head(
+            "🏅",
+            "Sales By Sport",
+            "Which sport matters most to the shop? Every sport is compared here.",
+        ),
         unsafe_allow_html=True,
     )
     if leader:
@@ -456,12 +463,12 @@ def page_sales_story(context):
         ),
         unsafe_allow_html=True,
     )
-    seasonality = analytics.monthly_seasonality(context["sport_sales"])
+    seasonality = analytics.monthly_seasonality(context["shop"].sales)
     st.plotly_chart(
         charts.seasonal_chart(seasonality), use_container_width=True, config=CHART_CONFIG
     )
     seasonal_line = insights.seasonal_story(
-        analytics.seasonal_peak_by_category(context["sport_sales"])
+        analytics.seasonal_peak_by_category(context["shop"].sales)
     )
     if seasonal_line:
         st.markdown(
