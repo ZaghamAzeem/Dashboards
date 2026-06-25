@@ -10,7 +10,21 @@ locally, performs its own analysis, and requires no cloud services or API keys.
 
 | Project | Description |
 | --- | --- |
+| [Naeem Sports Dashboard](./Naeem%20Sports%20Dashboard) | Shop intelligence for Naeem Sports Goods Shop |
 | [Sadat Surgical Dashboard](./Sadat%20Surgical%20Dashboard) | Inventory intelligence for Sadat Surgical and Medical Supplies |
+
+### Naeem Sports Dashboard
+
+A shop intelligence dashboard for a sports goods retailer. It turns two years of daily sales and
+stock movements into plain answers for a shop owner: what is selling, which sports are driving the
+business, what is running low, what may sell over the coming week, and what is worth reordering.
+
+Includes a shop overview with a written daily story, sales momentum, category and product
+rankings, product momentum and slow movers, inventory health classification, stock alerts, a
+seven-day demand forecast for every product, weekly and seasonal demand patterns, and a
+prioritised shopping list.
+
+Built with Python, Streamlit, Pandas, NumPy, Plotly, Scikit-learn and SQLite.
 
 ### Sadat Surgical Dashboard
 
