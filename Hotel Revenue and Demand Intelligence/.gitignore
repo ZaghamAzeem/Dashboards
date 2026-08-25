@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Generated dataset (rebuild with: python data/make_dataset.py)
+data/hotel.db
+data/*.db-journal
+
+# Environment and secrets
+.env
+.env.*
+*.key
+*.pem
+secrets.toml
+.streamlit/secrets.toml
+
+# Editors and operating system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local tooling
+.claude/
+*.log
