@@ -10,8 +10,25 @@ locally, performs its own analysis, and requires no cloud services or API keys.
 
 | Project | Description |
 | --- | --- |
+| [Hotel Revenue and Demand Intelligence](./Hotel%20Revenue%20and%20Demand%20Intelligence) | Revenue, demand and guest intelligence for Grand Horizon Hotel |
 | [Naeem Sports Dashboard](./Naeem%20Sports%20Dashboard) | Shop intelligence for Naeem Sports Goods Shop |
 | [Sadat Surgical Dashboard](./Sadat%20Surgical%20Dashboard) | Inventory intelligence for Sadat Surgical and Medical Supplies |
+
+### Hotel Revenue and Demand Intelligence
+
+A revenue and demand intelligence dashboard for a 120-room hotel. It turns two years of booking
+records into plain answers for an owner or general manager: how the hotel is performing, where the
+money comes from, which rooms earn their keep, who the valuable guests are, why reservations fall
+away, and how full the hotel is likely to be over the coming fortnight.
+
+Includes an executive overview with a written business story, revenue analysis by room category,
+booking source and guest type, booking and lead time patterns, room category ranking on yield and
+occupancy, guest segmentation into value groups, cancellation analysis across six dimensions, a
+fourteen-night demand and revenue forecast with accuracy measured against held-out nights,
+prioritised management recommendations, and a business questions page that answers common
+questions and links to the detail.
+
+Built with Python, Streamlit, Pandas, NumPy, Plotly, Scikit-learn and SQLite.
 
 ### Naeem Sports Dashboard
 
@@ -45,5 +62,9 @@ Each project folder contains its own README with setup instructions. In general:
 ```bash
 cd "<project folder>"
 pip install -r requirements.txt
-streamlit run dashboard/app.py
+python data/make_dataset.py
+streamlit run app.py
 ```
+
+The entry point differs between projects: the earlier dashboards run `dashboard/app.py`. Each
+project README states which to use, along with how to run its tests.
